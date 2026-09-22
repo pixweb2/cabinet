@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نمونه کارها</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+  }
+
+  html, body {
+    background: #e8dcc8;
+    color: #4a2c17;
+    min-height: 100vh;
+  }
+
+  /* ===== هدر ===== */
+  .page-header {
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0e6d2;
+    border-bottom: 1px solid #d4c4a8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .page-header h2 {
+    color: #6b4423;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .back-btn {
+    padding: 10px 24px;
+    background: transparent;
+    border: 2px solid #8a6a3f;
+    color: #6b4423;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .back-btn:active {
+    background: #8a6a3f;
+    color: #f5ede0;
+  }
+
+  /* ===== گالری ===== */
+  .gallery-wrap {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .gallery-grid img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid #d4c4a8;
+    cursor: pointer;
+    transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .gallery-grid img:active {
+    transform: scale(0.97);
+    border-color: #8a6a3f;
+  }
+
+  /* ===== فوتر ===== */
+  footer {
+    padding: 25px;
+    text-align: center;
+    background: #f0e6d2;
+    color: #8a6a3f;
+    font-size: 13px;
+    margin-top: 40px;
+  }
+
+  /* ===== لایت‌باکس ===== */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .lightbox.show {
+    display: flex;
+  }
+
+  .lightbox img {
+    max-width: 95%;
+    max-height: 90vh;
+    border-radius: 12px;
+    object-fit: contain;
+  }
+
+  /* ===== دسکتاپ ===== */
+  @media (min-width: 768px) {
+    .page-header { padding: 25px 40px; }
+    .page-header h2 { font-size: 24px; }
+    .back-btn { padding: 12px 30px; font-size: 15px; }
+    .gallery-wrap { padding: 30px 40px; }
+    .gallery-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .gallery-grid img { height: 220px; }
+  }
+
+  @media (min-width: 1024px) {
+    .gallery-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h2 id="pageTitle">نمونه کارها</h2>
+  <a class="back-btn" href="index.html">بازگشت</a>
+</header>
+
+<div class="gallery-wrap">
+  <div class="gallery-grid" id="galleryGrid"></div>
+</div>
+
+<footer>© ۱۴۰۴ چوب و هنر</footer>
+
+<!-- لایت‌باکس -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+  // ===== اطلاعات دسته‌ها =====
+  /** @type {Object.<string, {title: string, images: string[]}>} */
+  var data = {
+    m: { title: 'مبلمان', images: ['m1','m2','m3','m4','m5','m6'] },
+    b: { title: 'کابینت آشپزخانه', images: ['b1','b2','b3','b4','b5','b6'] },
+    t: { title: 'تخت خواب', images: ['t1','t2','t3','t4','t5','t6'] },
+    k: { title: 'کمد دیواری', images: ['k1','k2','k3','k4','k5','k6'] }
+  };
+
+  // ===== گرفتن پارامتر cat از URL =====
+  /** @type {string} */
+  var catKey = 'm';
+  var params = window.location.search;
+  if (params.indexOf('cat=') !== -1) {
+    catKey = params.split('cat=')[1].split('&')[0];
+  }
+
+  /** @type {any} */
+  var currentCat = data[catKey];
+
+  // ===== نمایش گالری =====
+  if (currentCat) {
+    document.getElementById('pageTitle').innerHTML = currentCat.title;
+    document.title = currentCat.title + ' | چوب و هنر';
+
+    /** @type {string[]} */
+    var images = currentCat.images;
+    var html = '';
+
+    for (var i = 0; i < images.length; i++) {
+      var src = images[i] + '.webp';
+      html = html + '<img src="' + src + '" onclick="openLightbox(\'' + src + '\')">';
+    }
+
+    document.getElementById('galleryGrid').innerHTML = html;
+  }
+
+  // ===== لایت‌باکس =====
+  /**
+   * @param {string} src
+   */
+  function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').className = 'lightbox show';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').className = 'lightbox';
+  }
+</script>
+
+</body>
+</html>
