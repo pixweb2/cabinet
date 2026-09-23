@@ -173,6 +173,9 @@
     transition: all 0.3s;
     box-shadow: 0 4px 12px rgba(107, 68, 35, 0.08);
     -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+    display: block;
+    color: inherit;
   }
 
   .cat-card:active {
@@ -197,74 +200,6 @@
     pointer-events: none;
   }
 
-  /* ===== صفحه گالری ===== */
-  .gallery {
-    position: fixed;
-    inset: 0;
-    background: #e8dcc8;
-    z-index: 10001;
-    overflow-y: auto;
-    transform: translateY(100%);
-    transition: transform 0.5s ease;
-  }
-
-  .gallery.show {
-    transform: translateY(0);
-  }
-
-  .gallery-head {
-    padding: 20px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f0e6d2;
-    border-bottom: 1px solid #d4c4a8;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  .gallery-head h2 {
-    color: #6b4423;
-    font-size: 20px;
-    font-weight: bold;
-  }
-
-  .back-btn {
-    padding: 10px 24px;
-    background: transparent;
-    border: 2px solid #8a6a3f;
-    color: #6b4423;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .back-btn:active {
-    background: #8a6a3f;
-    color: #f5ede0;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .gallery-grid img {
-    width: 100%;
-    height: 170px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 2px solid #d4c4a8;
-  }
-
   footer {
     padding: 25px;
     text-align: center;
@@ -276,8 +211,6 @@
   @media (min-width: 768px) {
     .cats-grid { grid-template-columns: repeat(4, 1fr); max-width: 1100px; }
     .cat-card img { height: 200px; }
-    .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .gallery-grid img { height: 220px; }
   }
 </style>
 </head>
@@ -299,25 +232,25 @@
     <h2>دسته‌بندی محصولات</h2>
     <div class="cats-grid">
 
-      <div class="cat-card" onclick="openGallery('m')">
+      <a class="cat-card" href="products.html?cat=m">
         <img src="mo1.webp" alt="مبلمان">
         <h3>مبلمان</h3>
-      </div>
+      </a>
 
-      <div class="cat-card" onclick="openGallery('b')">
+      <a class="cat-card" href="products.html?cat=b">
         <img src="bi1.webp" alt="کابینت">
         <h3>کابینت آشپزخانه</h3>
-      </div>
+      </a>
 
-      <div class="cat-card" onclick="openGallery('t')">
+      <a class="cat-card" href="products.html?cat=t">
         <img src="ta1.webp" alt="تخت">
         <h3>تخت خواب</h3>
-      </div>
+      </a>
 
-      <div class="cat-card" onclick="openGallery('k')">
+      <a class="cat-card" href="products.html?cat=k">
         <img src="ko1.webp" alt="کمد">
         <h3>کمد دیواری</h3>
-      </div>
+      </a>
 
     </div>
   </div>
@@ -325,24 +258,7 @@
   <footer>© ۱۴۰۴ چوب و هنر</footer>
 </div>
 
-<div class="gallery" id="gallery">
-  <div class="gallery-head">
-    <h2 id="galleryTitle">عنوان</h2>
-    <button class="back-btn" onclick="closeGallery()">بازگشت</button>
-  </div>
-  <div class="gallery-grid" id="galleryGrid"></div>
-</div>
-
 <script>
-  // ===== اطلاعات دسته‌ها =====
-  var data = {
-    m: { title: 'مبلمان', images: ['m1','m2','m3','m4','m5','m6'] },
-    b: { title: 'کابینت آشپزخانه', images: ['b1','b2','b3','b4','b5','b6'] },
-    t: { title: 'تخت خواب', images: ['t1','t2','t3','t4','t5','t6'] },
-    k: { title: 'کمد دیواری', images: ['k1','k2','k3','k4','k5','k6'] }
-  };
-
-  // ===== شروع سایت =====
   window.onload = function() {
     setTimeout(function() {
       document.getElementById('doors').className = 'doors open';
@@ -352,37 +268,9 @@
     }, 1900);
   };
 
-  // ===== دکمه شروع =====
   function startSite() {
     document.getElementById('startBtn').className = 'start-btn';
     document.getElementById('content').className = 'content show';
-  }
-
-  /**
-   * باز کردن گالری مربوط به دسته
-   * @param {string} key
-   */
-  function openGallery(key) {
-    /** @type {any} */
-    var allData = data;
-    var cat = allData[key];
-    if (!cat) return;
-
-    document.getElementById('galleryTitle').innerHTML = cat.title;
-
-    var html = '';
-    for (var i = 0; i < cat.images.length; i++) {
-      html = html + '<img src="' + cat.images[i] + '.webp">';
-    }
-    document.getElementById('galleryGrid').innerHTML = html;
-
-    document.getElementById('gallery').className = 'gallery show';
-    document.getElementById('gallery').scrollTop = 0;
-  }
-
-  // ===== بستن گالری =====
-  function closeGallery() {
-    document.getElementById('gallery').className = 'gallery';
   }
 </script>
 
