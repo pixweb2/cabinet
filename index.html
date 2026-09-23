@@ -6,19 +6,10 @@
 <title>کابینت سازی چوبی</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Vazirmatn', Tahoma, sans-serif;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+  html, body { background: #e8dcc8; color: #4a2c17; }
 
-  html, body {
-    background: #e8dcc8;
-    color: #4a2c17;
-  }
-
-  /* ===== دو لنگه در چوبی ===== */
+  /* ===== درها ===== */
   .doors {
     position: fixed;
     inset: 0;
@@ -26,7 +17,6 @@
     direction: ltr;
     z-index: 9999;
   }
-
   .door {
     width: 50%;
     height: 100vh;
@@ -34,28 +24,21 @@
     transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1);
     box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.6);
   }
-
   .door-left {
     background: linear-gradient(135deg, #6b4423 0%, #4a2c17 50%, #3d2614 100%);
     border-right: 3px solid #2b1a0f;
   }
-
   .door-right {
     background: linear-gradient(225deg, #6b4423 0%, #4a2c17 50%, #3d2614 100%);
     border-left: 3px solid #2b1a0f;
   }
-
   .door::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: repeating-linear-gradient(
-      90deg, transparent, transparent 8px,
-      rgba(0, 0, 0, 0.08) 8px, rgba(0, 0, 0, 0.08) 10px
-    );
+    background-image: repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(0, 0, 0, 0.08) 8px, rgba(0, 0, 0, 0.08) 10px);
     pointer-events: none;
   }
-
   .door::after {
     content: '';
     position: absolute;
@@ -65,7 +48,6 @@
     box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
     pointer-events: none;
   }
-
   .handle {
     position: absolute;
     top: 50%;
@@ -76,12 +58,14 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.3);
     transform: translateY(-50%);
   }
-
   .door-left .handle { right: 25px; }
   .door-right .handle { left: 25px; }
 
   .doors.open .door-left { transform: translateX(-100%); }
   .doors.open .door-right { transform: translateX(100%); }
+  .doors.open { pointer-events: none; }
+  .doors.hidden { display: none; }
+  .no-anim .door { transition: none; }
 
   /* ===== دکمه شروع ===== */
   .start-btn {
@@ -104,20 +88,18 @@
     transition: all 0.5s ease;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
-
   .start-btn.show {
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
     animation: pulse 2s ease-in-out infinite;
   }
-
   @keyframes pulse {
     0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(138, 106, 63, 0.5); }
-    50%      { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 15px rgba(138, 106, 63, 0); }
+    50% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 15px rgba(138, 106, 63, 0); }
   }
 
-  /* ===== محتوای سایت ===== */
+  /* ===== محتوا ===== */
   .content {
     position: relative;
     min-height: 100vh;
@@ -125,29 +107,22 @@
     transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
     background: #e8dcc8;
   }
-
-  .content.show {
-    transform: translateY(0);
-  }
+  .content.show { transform: translateY(0); }
+  .content.no-anim { transition: none; }
 
   .site-header {
     padding: 25px 30px;
     border-bottom: 1px solid #d4c4a8;
     background: #f0e6d2;
   }
+  .logo { font-size: 22px; color: #6b4423; font-weight: bold; }
 
-  .logo {
-    font-size: 22px;
-    color: #6b4423;
-    font-weight: bold;
-  }
-
+  /* ===== دسته‌بندی (سایز کوچیک) ===== */
   .categories {
     padding: 50px 25px;
     max-width: 1200px;
     margin: 0 auto;
   }
-
   .categories h2 {
     text-align: center;
     font-size: 28px;
@@ -164,23 +139,47 @@
     margin: 0 auto;
   }
 
+  /* ===== کارت با افکت نوری ===== */
   .cat-card {
+    position: relative;
     background: #f5ede0;
     border: 2px solid #d4c4a8;
     border-radius: 18px;
     overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s;
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
     box-shadow: 0 4px 12px rgba(107, 68, 35, 0.08);
-    -webkit-tap-highlight-color: transparent;
     text-decoration: none;
     display: block;
     color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
   }
 
-  .cat-card:active {
-    transform: scale(0.97);
-    border-color: #8a6a3f;
+  /* هاله نور پشت کارت */
+  .cat-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, transparent 30%, rgba(212, 165, 116, 0.5) 50%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* درخشش روی عکس */
+  .cat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    transition: left 0.7s ease;
+    pointer-events: none;
+    z-index: 2;
   }
 
   .cat-card img {
@@ -188,16 +187,79 @@
     height: 160px;
     object-fit: cover;
     display: block;
-    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.5s ease, filter 0.5s ease;
   }
 
   .cat-card h3 {
     color: #4a2c17;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
     padding: 15px 8px;
-    pointer-events: none;
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease;
+  }
+
+  /* ===== افکت لمسی (فعال روی موبایل) ===== */
+  .cat-card:active {
+    transform: scale(0.95);
+    border-color: #d4a574;
+    box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.3), 0 8px 25px rgba(138, 106, 63, 0.4);
+  }
+
+  .cat-card:active::before {
+    opacity: 1;
+  }
+
+  .cat-card:active::after {
+    left: 100%;
+  }
+
+  .cat-card:active img {
+    transform: scale(1.08);
+    filter: brightness(1.15) saturate(1.1);
+  }
+
+  .cat-card:active h3 {
+    color: #8a6a3f;
+  }
+
+  /* ===== افکت هاور (دسکتاپ) ===== */
+  @media (hover: hover) {
+    .cat-card:hover {
+      transform: translateY(-5px);
+      border-color: #d4a574;
+      box-shadow: 0 10px 30px rgba(138, 106, 63, 0.3);
+    }
+
+    .cat-card:hover::before {
+      opacity: 1;
+      animation: glowRotate 3s linear infinite;
+    }
+
+    .cat-card:hover::after {
+      left: 100%;
+    }
+
+    .cat-card:hover img {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    .cat-card:hover h3 {
+      color: #8a6a3f;
+    }
+  }
+
+  @keyframes glowRotate {
+    0% { background: linear-gradient(0deg, transparent 30%, rgba(212, 165, 116, 0.6) 50%, transparent 70%); }
+    25% { background: linear-gradient(90deg, transparent 30%, rgba(212, 165, 116, 0.6) 50%, transparent 70%); }
+    50% { background: linear-gradient(180deg, transparent 30%, rgba(212, 165, 116, 0.6) 50%, transparent 70%); }
+    75% { background: linear-gradient(270deg, transparent 30%, rgba(212, 165, 116, 0.6) 50%, transparent 70%); }
+    100% { background: linear-gradient(360deg, transparent 30%, rgba(212, 165, 116, 0.6) 50%, transparent 70%); }
   }
 
   footer {
@@ -206,6 +268,7 @@
     background: #f0e6d2;
     color: #8a6a3f;
     font-size: 13px;
+    margin-top: 40px;
   }
 
   @media (min-width: 768px) {
@@ -225,7 +288,7 @@
 
 <div class="content" id="content">
   <div class="site-header">
-    <div class="logo">چوب و هنر</div>
+    <div class="logo"> هنر چوب</div>
   </div>
 
   <div class="categories">
@@ -255,22 +318,36 @@
     </div>
   </div>
 
-  <footer>© ۱۴۰۴ چوب و هنر</footer>
 </div>
 
 <script>
-  window.onload = function() {
-    setTimeout(function() {
-      document.getElementById('doors').className = 'doors open';
-    }, 500);
-    setTimeout(function() {
-      document.getElementById('startBtn').className = 'start-btn show';
-    }, 1900);
-  };
+  var doors = document.getElementById('doors');
+  var content = document.getElementById('content');
+  var startBtn = document.getElementById('startBtn');
+  var alreadyOpened = sessionStorage.getItem('doorsOpened');
+
+  if (alreadyOpened) {
+    doors.className = 'doors open hidden no-anim';
+    content.className = 'content show no-anim';
+    startBtn.className = 'start-btn';
+  } else {
+    window.onload = function() {
+      setTimeout(function() {
+        doors.className = 'doors open';
+      }, 500);
+      setTimeout(function() {
+        startBtn.className = 'start-btn show';
+      }, 1900);
+    };
+  }
 
   function startSite() {
-    document.getElementById('startBtn').className = 'start-btn';
-    document.getElementById('content').className = 'content show';
+    startBtn.className = 'start-btn';
+    content.className = 'content show';
+    sessionStorage.setItem('doorsOpened', '1');
+    setTimeout(function() {
+      doors.className = 'doors open hidden';
+    }, 1400);
   }
 </script>
 

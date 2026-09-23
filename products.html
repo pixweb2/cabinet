@@ -19,7 +19,6 @@
     min-height: 100vh;
   }
 
-  /* ===== هدر ===== */
   .page-header {
     padding: 20px 25px;
     display: flex;
@@ -58,7 +57,6 @@
     color: #f5ede0;
   }
 
-  /* ===== گالری ===== */
   .gallery-wrap {
     padding: 20px;
     max-width: 1200px;
@@ -71,23 +69,39 @@
     gap: 12px;
   }
 
-  .gallery-grid img {
+  /* ===== آیتم محصول ===== */
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(107, 68, 35, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+
+  .product-item:active {
+    transform: scale(0.97);
+  }
+
+  .product-item img {
     width: 100%;
     height: 170px;
     object-fit: cover;
-    border-radius: 12px;
-    border: 2px solid #d4c4a8;
+    display: block;
     cursor: pointer;
-    transition: all 0.3s;
     -webkit-tap-highlight-color: transparent;
   }
 
-  .gallery-grid img:active {
-    transform: scale(0.97);
-    border-color: #8a6a3f;
+  .product-item .price {
+    background: #f0e6d2;
+    color: #6b4423;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    padding: 10px 5px;
+    border-top: 1px solid #d4c4a8;
   }
 
-  /* ===== فوتر ===== */
   footer {
     padding: 25px;
     text-align: center;
@@ -97,7 +111,7 @@
     margin-top: 40px;
   }
 
-  /* ===== لایت‌باکس ===== */
+  /* ===== لایت‌باکس با زوم ===== */
   .lightbox {
     position: fixed;
     inset: 0;
@@ -106,21 +120,55 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    padding: 20px;
+    overflow: hidden;
+    touch-action: none;
   }
 
   .lightbox.show {
     display: flex;
   }
 
-  .lightbox img {
+  .lightbox-img {
     max-width: 95%;
     max-height: 90vh;
-    border-radius: 12px;
     object-fit: contain;
+    border-radius: 8px;
+    transform-origin: center center;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-drag: none;
   }
 
-  /* ===== دسکتاپ ===== */
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #f5ede0;
+    font-size: 22px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .lightbox-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(245, 237, 224, 0.6);
+    font-size: 12px;
+    z-index: 1001;
+    pointer-events: none;
+  }
+
   @media (min-width: 768px) {
     .page-header { padding: 25px 40px; }
     .page-header h2 { font-size: 24px; }
@@ -130,7 +178,8 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 18px;
     }
-    .gallery-grid img { height: 220px; }
+    .product-item img { height: 220px; }
+    .product-item .price { font-size: 15px; padding: 14px 8px; }
   }
 
   @media (min-width: 1024px) {
@@ -149,16 +198,13 @@
   <div class="gallery-grid" id="galleryGrid"></div>
 </div>
 
-<footer>© ۱۴۰۴ چوب و هنر</footer>
-
-<!-- لایت‌باکس -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <img id="lightboxImg" src="" alt="">
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <div class="lightbox-hint"> </div>
 </div>
 
 <script>
-  // ===== اطلاعات دسته‌ها =====
-  /** @type {Object.<string, {title: string, images: string[]}>} */
   var data = {
     m: { title: 'مبلمان', images: ['m1','m2','m3','m4','m5','m6'] },
     b: { title: 'کابینت آشپزخانه', images: ['b1','b2','b3','b4','b5','b6'] },
@@ -166,46 +212,140 @@
     k: { title: 'کمد دیواری', images: ['k1','k2','k3','k4','k5','k6'] }
   };
 
-  // ===== گرفتن پارامتر cat از URL =====
-  /** @type {string} */
   var catKey = 'm';
   var params = window.location.search;
   if (params.indexOf('cat=') !== -1) {
     catKey = params.split('cat=')[1].split('&')[0];
   }
 
-  /** @type {any} */
   var currentCat = data[catKey];
 
-  // ===== نمایش گالری =====
   if (currentCat) {
     document.getElementById('pageTitle').innerHTML = currentCat.title;
-    document.title = currentCat.title + ' | چوب و هنر';
+    document.title = currentCat.title + ' |  هنر چوب';
 
-    /** @type {string[]} */
     var images = currentCat.images;
     var html = '';
 
     for (var i = 0; i < images.length; i++) {
       var src = images[i] + '.webp';
+      html = html + '<div class="product-item">';
       html = html + '<img src="' + src + '" onclick="openLightbox(\'' + src + '\')">';
+      html = html + '<div class="price">۱۰۰,۰۰۰,۰۰۰ تومان</div>';
+      html = html + '</div>';
     }
 
     document.getElementById('galleryGrid').innerHTML = html;
   }
 
-  // ===== لایت‌باکس =====
-  /**
-   * @param {string} src
-   */
+  // ===== لایت‌باکس + زوم =====
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+
+  var scale = 1, minScale = 1, maxScale = 4;
+  var posX = 0, posY = 0;
+  var lastDist = 0;
+  var lastTapTime = 0;
+  var isDragging = false;
+  var dragStartX = 0, dragStartY = 0;
+
+  function applyTransform() {
+    lightboxImg.style.transform = 'translate(' + posX + 'px,' + posY + 'px) scale(' + scale + ')';
+  }
+
+  function resetZoom() {
+    scale = 1; posX = 0; posY = 0;
+    applyTransform();
+  }
+
   function openLightbox(src) {
-    document.getElementById('lightboxImg').src = src;
-    document.getElementById('lightbox').className = 'lightbox show';
+    lightboxImg.src = src;
+    resetZoom();
+    lightbox.className = 'lightbox show';
   }
 
   function closeLightbox() {
-    document.getElementById('lightbox').className = 'lightbox';
+    lightbox.className = 'lightbox';
   }
+
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  function getDistance(touches) {
+    var dx = touches[0].clientX - touches[1].clientX;
+    var dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  lightboxImg.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+      lastDist = getDistance(e.touches);
+    } else if (e.touches.length === 1) {
+      var now = Date.now();
+      if (now - lastTapTime < 300) {
+        scale = scale > 1 ? 1 : 2.5;
+        posX = 0; posY = 0;
+        applyTransform();
+      }
+      lastTapTime = now;
+
+      isDragging = scale > 1;
+      dragStartX = e.touches[0].clientX - posX;
+      dragStartY = e.touches[0].clientY - posY;
+    }
+  }, { passive: true });
+
+  lightboxImg.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 2) {
+      var newDist = getDistance(e.touches);
+      if (lastDist > 0) {
+        var delta = (newDist - lastDist) * 0.01;
+        scale = Math.min(maxScale, Math.max(minScale, scale + delta));
+        applyTransform();
+      }
+      lastDist = newDist;
+    } else if (e.touches.length === 1 && isDragging) {
+      posX = e.touches[0].clientX - dragStartX;
+      posY = e.touches[0].clientY - dragStartY;
+      applyTransform();
+    }
+  }, { passive: true });
+
+  lightboxImg.addEventListener('touchend', function(e) {
+    lastDist = 0;
+    isDragging = false;
+    if (scale <= 1) { posX = 0; posY = 0; applyTransform(); }
+  });
+
+  lightboxImg.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    var delta = -e.deltaY * 0.002;
+    scale = Math.min(maxScale, Math.max(minScale, scale + delta));
+    if (scale <= 1) { posX = 0; posY = 0; }
+    applyTransform();
+  }, { passive: false });
+
+  lightboxImg.addEventListener('dblclick', function() {
+    scale = scale > 1 ? 1 : 2.5;
+    posX = 0; posY = 0;
+    applyTransform();
+  });
+
+  var mouseDown = false;
+  lightboxImg.addEventListener('mousedown', function(e) {
+    if (scale <= 1) return;
+    mouseDown = true;
+    dragStartX = e.clientX - posX;
+    dragStartY = e.clientY - posY;
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!mouseDown) return;
+    posX = e.clientX - dragStartX;
+    posY = e.clientY - dragStartY;
+    applyTransform();
+  });
+  window.addEventListener('mouseup', function() { mouseDown = false; });
 </script>
 
 </body>
